@@ -1,0 +1,4 @@
+# gesture
+用于从摄像头获取视频流，为每一帧绘制手部关键点，食指与拇指捏合时可以进行轨迹绘制
+# tips
+可以直接装好mediapipe等库用python运行，注意python版本太高可能导致mediapipe安装不上
