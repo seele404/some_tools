@@ -1,4 +1,5 @@
 # gesture
 用于从摄像头获取视频流，为每一帧绘制手部关键点，食指与拇指捏合时可以进行轨迹绘制
+额外用opengl把食指与拇指点位在空间中画出来了
 # tips
-可以直接装好mediapipe等库用python运行，注意python版本太高可能导致mediapipe安装不上
+可以直接装好mediapipe、pygame、PyOpenGL、PyOpenGL_accelerate等库后用python运行，注意python版本太高可能导致mediapipe安装不上
