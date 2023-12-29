@@ -1,0 +1,8 @@
+{
+  "devices": {
+    "all": ["on", "off"],
+    "lights": ["on", "off"],
+    "air-conditioning": ["on", "off"]
+  }
+}
+
