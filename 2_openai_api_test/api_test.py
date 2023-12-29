@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import openai
+import json
+from pathlib import Path
+
 
 def query_openai(prompt, api_key):
     """
@@ -30,9 +33,17 @@ def query_openai(prompt, api_key):
     return response_text.strip()
 
 def main():
-    api_key = "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"  # 替换为你的OpenAI API密钥
+
+    # 获取当前脚本文件的绝对路径
+    script_dir = Path(__file__).resolve().parent
+    config_path = script_dir / 'config.json'
+
+    # 使用构建的绝对路径打开config.json
+    with open(config_path, 'r') as file:
+        config = json.load(file)
+    api_key = config['OPENAI_API_KEY']
     initial_prompt = ("我的屋子里有一些智能设备：灯、空调；我希望你扮演一个能调度整个屋子的智能机器人，"
-                  "我向你发送自然语言，你理解后通来向我的家居发送一个控制指令，这个指令的格式是：\n"
+                  "我向你发送自然语言，你理解后来向我的家居发送一个控制指令，这个指令的格式是：\n"
                   "'{\"object\":\"A\",\"status\":\"B\"}'\n"
                   "其中A只能是lights或者air-conditioning或者other；\n"
                   "其中B只能是on或者off或者other；\n"
