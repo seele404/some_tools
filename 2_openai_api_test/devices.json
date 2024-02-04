@@ -2,6 +2,7 @@
   "devices": {
     "all": ["on", "off"],
     "lights": ["on", "off"],
+    "window":["on", "off"],
     "air-conditioning": ["on", "off"]
   }
 }

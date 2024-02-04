@@ -42,35 +42,25 @@ def build_initial_prompt(devices_info):
             "其中只有A和B的值完全依据接下来我向你说的话来确定。我举个例子，如果我接下来对你说：“好热啊，"
             "如果能凉快一点就好了”，那你应该能理解到需要打开设备中的空调，然后用非常标准的格式回答我：'{\"object\":\"air-conditioning\",\"status\":\"on\"}'，"
             "如果我的言语没有涉及到上面的智能设备，就用other代替，你的回答就变成了：'{\"object\":\"other\",\"status\":\"other\"}'，表示没有需要控制的设备。"
-            "请一定要注意你的回答中必须要求包含这个格式，不允许没有这个。"
-            "好了，接下来我要提出需求了：\n\n")
+            "请一定要注意你的回答中必须要求包含这个格式，不允许没有这个。\n\n")
 
 
-def query_openai(prompt, api_key):
+def query_openai(messages, api_key):
     """
-    使用新版OpenAI库向GPT-3发送文本，并返回响应。
+    使用新版OpenAI库向gpt-3.5-turbo发送文本，并返回响应。
     :param prompt: 包含详细提示的文本。
     :param api_key: 你的OpenAI API密钥。
-    :return: GPT-3模型的响应。
+    :return: gpt-3.5-turbo模型的响应。
     """
     openai.api_key = api_key
 
-    response = openai.Completion.create(
-        model="text-davinci-003",  # 确保选择正确的模型
-        prompt=prompt,
-        max_tokens=3000,
-        stop=["用户:", "GPT-3:"],  # 添加停止序列
-        stream=True  # 使用流式响应
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=messages
     )
 
-    response_text = ""
-    for part in response:
-        # 打印并拼接所有有效文本部分
-        if 'choices' in part:
-            for choice in part['choices']:
-                if 'text' in choice:
-                    response_text += choice['text']
-
+    response_text = response['choices'][0]['message']['content']
+    
     return response_text.strip()
 
 def main():
@@ -86,6 +76,9 @@ def main():
         config = json.load(file)
     api_key = config['OPENAI_API_KEY']
     
+    # 初始化对话历史
+    conversation_history = []
+    
     # 构建初始提示词
     initial_prompt = build_initial_prompt(devices_info)
 
@@ -100,15 +93,22 @@ def main():
             print("请输入一些具体的需求。")
             continue
 
-        # 设置每次请求的对话历史为初始提示加上当前的用户输入
-        conversation = initial_prompt + f"用户: {user_input}\n"
+	 # 将用户输入添加到对话历史
+        conversation_history.append({"role": "user", "content": user_input})
+
+        # 构建消息列表，包含对话历史
+        messages = [{"role": "system", "content": initial_prompt}] + conversation_history
 
         # 发送请求并获取响应
-        response = query_openai(conversation, api_key)
+        response = query_openai(messages, api_key)
 
         # 获取并打印响应
         ai_response = response.strip()
-        print(f"GPT-3: {ai_response}\n")
+        print(f"gpt-3.5-turbo: {ai_response}\n")
+        
+        # 将模型的回复也添加到对话历史
+        conversation_history.append({"role": "assistant", "content": ai_response})
+
 
 if __name__ == "__main__":
     main()
